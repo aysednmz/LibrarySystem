@@ -1,0 +1,15 @@
+@model string
+
+@{
+    ViewData["Title"] = "Email Confirmation";
+}
+
+<h1>Email Confirmation</h1>
+
+<div class="alert alert-info">
+    @Model
+</div>
+
+<p>
+    <a asp-action="Login" class="btn btn-primary">Login</a>
+</p>

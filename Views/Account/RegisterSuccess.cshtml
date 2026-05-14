@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Registration Successful";
+}
+
+<h1>Registration Successful</h1>
+
+<div class="alert alert-success">
+    Your account has been created.
+</div>
+
+<p>
+    In a real system, an email would be sent to you. For this demo, use the link below to confirm your email.
+</p>
+
+@if (TempData["ConfirmationLink"] != null)
+{
+    <p>
+        <a class="btn btn-primary" href="@TempData["ConfirmationLink"]">Confirm Email</a>
+    </p>
+}
+
+<p>
+    <a asp-action="Login" class="btn btn-secondary">Go to Login</a>
+</p>

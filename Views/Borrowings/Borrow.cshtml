@@ -1,0 +1,84 @@
+@model BorrowBookViewModel
+
+@{
+    ViewData["Title"] = "Borrow Book";
+}
+
+<h1>Borrow Book</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Book Information</h5>
+            </div>
+            <div class="card-body">
+                <h4>@Model.BookTitle</h4>
+                <p class="mb-1"><strong>Author:</strong> @Model.Author</p>
+                <p class="mb-0">
+                    <strong>Available Copies:</strong>
+                    <span class="badge bg-white text-dark">@Model.AvailableCopies</span>
+                </p>
+            </div>
+        </div>
+
+        <form asp-action="Borrow" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="BookId" />
+            <input type="hidden" asp-for="BookTitle" />
+            <input type="hidden" asp-for="Author" />
+            <input type="hidden" asp-for="AvailableCopies" />
+
+            <div class="form-group mb-3">
+                <label asp-for="BorrowDurationDays" class="control-label"></label>
+                <input asp-for="BorrowDurationDays" class="form-control" type="number" min="1" max="30" />
+                <span asp-validation-for="BorrowDurationDays" class="text-danger"></span>
+                <small class="form-text text-muted">You can borrow a book for a maximum of 30 days.</small>
+            </div>
+
+            <div class="alert alert-white">
+                <strong>Due Date:</strong> <span
+                    id="dueDate">@DateTime.Now.AddDays(Model.BorrowDurationDays).ToString("MMMM dd, yyyy")</span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-secondary">Confirm Borrow</button>
+                <a asp-controller="Books" asp-action="Details" asp-route-id="@Model.BookId"
+                    class="btn btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">Borrowing Rules</h5>
+                <ul>
+                    <li>You must give back books on the due date!</li>
+                    <li>Late returns may result in fines or suspension!</li>
+                    <li>You can only borrow one copy of each book at the same time.</li>
+                    <li>You should give back books to library administration.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('BorrowDurationDays').addEventListener('input', function () {
+            var days = parseInt(this.value) || 0;
+            var dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + days);
+            document.getElementById('dueDate').textContent = dueDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        });
+    </script>
+}

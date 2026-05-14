@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Book>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>Library Web Page</h1>
+
+<div class="row mt-3">
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">Number of Books</h5>
+                <p class="display-6 mb-0">@ViewBag.TotalBooks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">All Borrowings</h5>
+                <p class="display-6 mb-0">@ViewBag.TotalBorrowings</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">Current Borrowings</h5>
+                <p class="display-6 mb-0">@ViewBag.ActiveBorrowings</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mt-4">Recently Added Books</h3>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No books found. Admin can add books from the Books page.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var b in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@b.Title</h5>
+                        <p class="mb-1"><strong>Author:</strong> @b.Author</p>
+                        <p class="mb-1"><strong>Category:</strong> @b.Category</p>
+                        <p class="mb-3">
+                            <span class="badge bg-@(b.AvailableCopies > 0 ? "secondary" : "danger")">
+                                @b.AvailableCopies / @b.TotalCopies available
+                            </span>
+                        </p>
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@b.Id" class="btn btn-sm btn-info text-white">Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

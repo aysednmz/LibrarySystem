@@ -1,0 +1,113 @@
+@model IEnumerable<Borrowing>
+
+@{ 
+    ViewData["Title"] = "My Borrowings";
+    var activeBorrowings = Model.Where(b => b.Status == "Borrowed" || b.Status == "Overdue").ToList();
+    var returnedBorrowings = Model.Where(b => b.Status == "Returned").ToList();
+}
+
+<h1>My Borrowed Books</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You haven't borrowed any books yet. <a asp-controller="Books" asp-action="Index">Browse books</a> to get started.
+    </div>
+}
+else
+{
+    <!-- Active Borrowings -->
+
+    @if (activeBorrowings.Any())
+    {
+        <h3 class="mt-4">Currently Borrowed</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Borrow Date</th>
+                        <th>Due Date</th>
+                        <th>Days Left</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in activeBorrowings)
+                    {
+                        var daysLeft = (item.DueDate - DateTime.Now).Days;
+                        <tr class="@(daysLeft < 0 ? "table-danger" : daysLeft <= 3 ? "table-warning" : "")">
+                            <td><strong>@item.Book?.Title</strong></td>
+                            <td>@item.Book?.Author</td>
+                            <td>@item.BorrowDate.ToString("MMM dd, yyyy")</td>
+                            <td>@item.DueDate.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                @if (daysLeft < 0)
+                                {
+                                    <span class="text-danger">@Math.Abs(daysLeft) days overdue</span>
+                                }
+                                else if (daysLeft == 0)
+                                {
+                                    <span class="text-warning">Due today</span>
+                                }
+                                else
+                                {
+                                    <span>@daysLeft days</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge bg-@(item.Status == "Borrowed" ? "warning" : "danger")">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>
+                                <form asp-action="Return" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-primary"
+                                        onclick="return confirm('Return this book?')">
+                                        Return The Book
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <!-- Borrowing History -->
+
+    @if (returnedBorrowings.Any())
+    {
+        <h3 class="mt-4">Borrowing History</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Borrow Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in returnedBorrowings)
+                    {
+                        <tr>
+                            <td><strong>@item.Book?.Title</strong></td>
+                            <td>@item.Book?.Author</td>
+                            <td>@item.BorrowDate.ToString("MMM dd, yyyy")</td>
+                            <td>@item.ReturnDate?.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge bg-primary">@item.Status</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
